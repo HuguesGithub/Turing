@@ -1,0 +1,10 @@
+body { background-color: #454d55; }
+.container {
+  max-width: 100%;
+}
+.list-group-item {
+  padding: .25rem 1.25rem;
+}
+.fs-10px {
+    font-size:10px;
+}
