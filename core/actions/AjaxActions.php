@@ -20,9 +20,13 @@ class AjaxActions extends LocalActions
     public static function dealWithAjax()
     {
         $criteriaId = $_POST['criteriaId'];
-        $fileName  = 'https://turing.jhugues.fr/wp-content/plugins/hj-turing/';
-        $fileName .= self::WEB_PP_FRAGMENTS.'publique-fragments-criteria-'.$criteriaId.'.tpl';
-        $criteriaContent = vsprintf(file_get_contents($fileName), array());
+        if ($criteriaId>=1 && $criteriaId<=23) {
+            $fileName = self::URL_PLUGIN.self::WEB_PP_FRAGMENTS.'publique-fragments-criteria-'.$criteriaId.'.tpl';
+            $criteriaContent = vsprintf(file_get_contents($fileName), array());
+        } else {
+            $fileName = 'publique-fragments-criteria-'.$criteriaId.'.tpl';
+            $criteriaContent = 'Le fichier '.$fileName.' n\'existe pas.';
+        }
         return '{"criteria": '.json_encode($criteriaContent).', "fileName": '.json_encode($fileName).'}';
     }
 

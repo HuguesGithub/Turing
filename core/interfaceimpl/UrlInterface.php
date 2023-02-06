@@ -11,6 +11,9 @@ if (!defined('ABSPATH')) {
  */
 interface UrlInterface
 {
+    // Plug-in
+    const URL_PLUGIN       = 'https://turing.jhugues.fr/wp-content/plugins/hj-turing/';
+    
     // Directories
     const WEB_PAGES_PUBLIC = 'web/pages/publique/';
     const WEB_PP_FRAGMENTS = self::WEB_PAGES_PUBLIC.'fragments/';
