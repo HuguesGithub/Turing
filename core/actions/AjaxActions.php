@@ -12,7 +12,6 @@ if (!defined('ABSPATH')) {
  */
 class AjaxActions extends LocalActions
 {
-
     /**
      * Gère les actions Ajax
      * @since v1.22.12.29
@@ -20,10 +19,11 @@ class AjaxActions extends LocalActions
      */
     public static function dealWithAjax()
     {
-        $obj        = new AjaxActions();
-		$criteriaId = $_POST['criteriaId'];
-		$fileName   = 'https://turing.jhugues.fr/wp-content/plugins/hj-turing/'.self::WEB_PP_FRAGMENTS.'publique-fragments-criteria-'.$criteriaId.'.tpl';
-		return '{"criteria": '.json_encode(vsprintf(file_get_contents($fileName), array())).', "fileName": '.json_encode($fileName).'}';
+        $criteriaId = $_POST['criteriaId'];
+        $fileName  = 'https://turing.jhugues.fr/wp-content/plugins/hj-turing/';
+        $fileName .= self::WEB_PP_FRAGMENTS.'publique-fragments-criteria-'.$criteriaId.'.tpl';
+        $criteriaContent = vsprintf(file_get_contents($fileName), array());
+        return '{"criteria": '.json_encode($criteriaContent).', "fileName": '.json_encode($fileName).'}';
     }
 
 }
