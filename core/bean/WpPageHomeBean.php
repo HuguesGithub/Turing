@@ -23,10 +23,8 @@ class WpPageHomeBean extends WpPageBean
             self::ATTR_CLASS => 'dropdown-item',
             'data-trigger' => 'click',
         );
-        $arrAllowedCriteria = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23);
         $strOptions = '';
-        while (!empty($arrAllowedCriteria)) {
-            $nb = array_shift($arrAllowedCriteria);
+        for ($nb=1; $nb<49; $nb++) {
             $liAttributes['data-criteria-id'] = $nb;
             $strOptions .= $this->getBalise(self::TAG_LI, $nb, $liAttributes);
         }
@@ -37,14 +35,18 @@ class WpPageHomeBean extends WpPageBean
         $btnDropDown .= 'text-white fw-bold" data-trigger="dropdown" aria-expanded="false">&nbsp;</button>';
         while (!empty($arrAllowedRanks)) {
             $rk = array_shift($arrAllowedRanks);
-            $ulAttributes = array('class'=>'dropdown-menu', 'data-criteria-rank'=>$rk);
+            $ulAttributes = array(
+                self::ATTR_CLASS=>'dropdown-menu',
+                'data-criteria-rank'=>$rk,
+                'style'=>'max-height: 200px; overflow: auto;'
+            );
             $ul = $this->getBalise(self::TAG_UL, $strOptions, $ulAttributes);
-            $div = $this->getBalise(self::TAG_DIV, $btnDropDown.$ul, array('class'=>'btn-group', 'role'=>'group'));
-            $labelAttributes = array('class'=>'btn btn-light btn-outline-dark text-success mb-0');
+            $div = $this->getBalise(self::TAG_DIV, $btnDropDown.$ul, array(self::ATTR_CLASS=>'btn-group', 'role'=>'group'));
+            $labelAttributes = array(self::ATTR_CLASS=>'btn btn-light btn-outline-dark text-success mb-0');
             $label = $this->getBalise(self::TAG_LABEL, $rk, $labelAttributes);
-            $div = $this->getBalise(self::TAG_DIV, $label.$div, array('class'=>'col-2 btn-group'));
+            $div = $this->getBalise(self::TAG_DIV, $label.$div, array(self::ATTR_CLASS=>'col-2 btn-group'));
             $div .= '<div class="col-10 d-flex btn-group text-center criteria" data-criteria-display="'.$rk.'"></div>';
-            $strCriteria .= $this->getBalise(self::TAG_DIV, $div, array('class'=>'row mb-1'));
+            $strCriteria .= $this->getBalise(self::TAG_DIV, $div, array(self::ATTR_CLASS=>'row mb-1'));
         }
 
         // Contenu de #panelCodes

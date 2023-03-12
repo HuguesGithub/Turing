@@ -106,7 +106,11 @@ function applyCriteria() {
 			switch (operatorCriteria) {
 				case '<' :
 					// Premier inférieur strict au deuxième
-					firstInferieurSecond($(this), leftCriteria, rightCriteria);
+					firstInferieurSecond($(this), leftCriteria, rightCriteria, true);
+				break;
+				case '<=' :
+					// Premier inférieur strict au deuxième
+					firstInferieurSecond($(this), leftCriteria, rightCriteria, false);
 				break;
 				case '=' :
 					// Premier égal le deuxième 
@@ -114,7 +118,11 @@ function applyCriteria() {
 				break;
 				case '>' :
 					// Premier supérieur strict au deuxième
-					firstSuperieurSecond($(this), leftCriteria, rightCriteria);
+					firstSuperieurSecond($(this), leftCriteria, rightCriteria, true);
+				break;
+				case '>=' :
+					// Premier supérieur strict au deuxième
+					firstSuperieurSecond($(this), leftCriteria, rightCriteria, false);
 				break;
 				case 'M' :
 					// Premier modulo 2 égal au second
@@ -140,7 +148,27 @@ function applyCriteria() {
                     // first est vide, second indique si on cherche des Jumeaux (1) ou pas de Jumeaux (0)
                     checkTwins($(this), rightCriteria);
                 break;
+                case 'C' :
+                    // A-t-on first valeurs consécutives, second indique si on cherche des Croissantes (1) ou croissantes et décroissantes (0)
+                    checkFlush($(this), leftCriteria, rightCriteria);
+                break;
                 // A développer
+                case 'min' :
+                    // La première valeur est-elle minimale stricte ?
+                    checkMin($(this), firstCriteria, secondCriteria, true);
+                break;
+                case 'min=' :
+                    // La première valeur est-elle minimale ?
+                    checkMin($(this), firstCriteria, secondCriteria, false);
+                break;
+                case 'max' :
+                    // La première valeur est-elle maximale stricte ?
+                    checkMax($(this), firstCriteria, secondCriteria, true);
+                break;
+                case 'max=' :
+                    // La première valeur est-elle maximale ?
+                    checkMax($(this), firstCriteria, secondCriteria, false);
+                break;
                 case 'XXX' :
                     console.log('Opérateur '+operatorCriteria+' en cours de développement.');
                 break;
@@ -151,6 +179,108 @@ function applyCriteria() {
 			}
 		});
 	});
+}
+
+/**----------------------------------------------
+ * FUNCTION checkMin
+ * ----------------------------------------------
+ * Cette fonction permet de checker que le premier élément est minimal.
+ */
+function checkMin(obj, firstCriteria, secondCriteria, blnStrict) {
+    let leftCriteria = getCriteriaValue(obj, firstCriteria);
+    let rightCriteria = 0;
+    switch (secondCriteria) {
+        case 'r&c' :
+            rightCriteria = Math.min(obj.data('r')*1, obj.data('c')*1);
+        break;
+        case 't&r' :
+            rightCriteria = Math.min(obj.data('t')*1, obj.data('r')*1);
+        break;
+        case 'c&t' :
+            rightCriteria = Math.min(obj.data('c')*1, obj.data('t')*1);
+        break;
+    }
+    console.log(leftCriteria);
+    console.log(rightCriteria);
+    console.log(blnStrict);
+
+    if (blnStrict && leftCriteria>=rightCriteria || !blnStrict && leftCriteria>rightCriteria) {
+        obj.addClass('bg-danger').removeClass('bg-light');
+    }
+}
+
+/**----------------------------------------------
+ * FUNCTION checkMin
+ * ----------------------------------------------
+ * Cette fonction permet de checker que le premier élément est maximl.
+ */
+function checkMax(obj, firstCriteria, secondCriteria, blnStrict) {
+    let leftCriteria = getCriteriaValue(obj, firstCriteria);
+    let rightCriteria = 5;
+    switch (secondCriteria) {
+        case 'r&c' :
+            rightCriteria = Math.max(obj.data('r')*1, obj.data('c')*1);
+        break;
+        case 't&r' :
+            rightCriteria = Math.max(obj.data('t')*1, obj.data('r')*1);
+        break;
+        case 'c&t' :
+            rightCriteria = Math.max(obj.data('c')*1, obj.data('t')*1);
+        break;
+    }
+    console.log(leftCriteria);
+    console.log(rightCriteria);
+    console.log(blnStrict);
+
+    if (blnStrict && leftCriteria<=rightCriteria || !blnStrict && leftCriteria<rightCriteria) {
+        obj.addClass('bg-danger').removeClass('bg-light');
+    }
+}
+
+/**----------------------------------------------
+ * FUNCTION checkFlush
+ * ----------------------------------------------
+ * Cette fonction permet de checker la présence de valeurs consécutives
+ * croissantes ou non.
+ */
+function checkFlush(obj, leftCriteria, rightCriteria) {
+    let digit1 = obj.html().substr(0, 1);
+    let digit2 = obj.html().substr(1, 1);
+    let digit3 = obj.html().substr(2, 1);
+
+    if (leftCriteria==3) {
+        if (rightCriteria==1) {
+            if (!(digit1==digit2-1 && digit2==digit3-1)) {
+                obj.addClass('bg-danger').removeClass('bg-light');
+            }
+        } else if(rightCriteria==0) {
+            if (!(digit1==digit2-1 && digit2==digit3-1) && !(digit2==digit1-1 && digit3==digit2-1)) {
+                obj.addClass('bg-danger').removeClass('bg-light');
+            }
+        }
+    } else if (leftCriteria==2) {
+        if (rightCriteria==1) {
+            if (!(digit1==digit2-1 && digit2!=digit3-1 || digit2==digit3-1 && digit1!=digit2-1)) {
+                obj.addClass('bg-danger').removeClass('bg-light');
+            }
+        } else if(rightCriteria==0) {
+            if (!(digit1==digit2-1 && digit2!=digit3-1 || digit2==digit3-1 && digit1!=digit2-1)
+                &&
+                !(digit1-1==digit2 && digit2-1!=digit3 || digit2-1==digit3 && digit1-1!=digit2)) {
+                obj.addClass('bg-danger').removeClass('bg-light');
+            }
+        }
+    } else {
+        if (rightCriteria==1) {
+            if (digit1==digit2-1 || digit2==digit3-1) {
+                obj.addClass('bg-danger').removeClass('bg-light');
+            }
+        } else if(rightCriteria==0) {
+            if (digit1==digit2-1 || digit2==digit3-1 || digit1-1==digit2 || digit2-1==digit3) {
+                obj.addClass('bg-danger').removeClass('bg-light');
+            }
+        }
+    }
 }
 
 /**----------------------------------------------
@@ -239,12 +369,17 @@ function firstAppearsSecond(obj, leftCriteria, rightCriteria) {
 /**----------------------------------------------
  * FUNCTION firstModuloSecond
  * ----------------------------------------------
- * Cette fonction permet d'exclure un code dont le leftCriteria%2!=rightCriteria.
+ * @param obj le code qu'on teste
+ * @param leftCriteria la valeur qu'on teste
+ * @param rightCriteria le critère testé
+ * ----------------------------------------------
+ * Si rightCriteria vaut 1, on teste si leftCriteria est impair
+ * Sinon, on teste si leftCriteria est un multiple de rightCriteria
  */
 function firstModuloSecond(obj, leftCriteria, rightCriteria) {
-	if (leftCriteria%2!=rightCriteria) {
+    if (rightCriteria==1 && leftCriteria%2==0 || rightCriteria!=1 && leftCriteria%rightCriteria!=0) {
 		obj.addClass('bg-danger').removeClass('bg-light');
-	}
+    }
 }
 
 /**----------------------------------------------
@@ -253,12 +388,12 @@ function firstModuloSecond(obj, leftCriteria, rightCriteria) {
  * Cette fonction permet d'exclure un code dont le leftCriteria<=rightCriteria.
  * Si les paramètres sont des objets, on a des RegExp.
  */
-function firstSuperieurSecond(obj, leftCriteria, rightCriteria) {
+function firstSuperieurSecond(obj, leftCriteria, rightCriteria, blnStrict) {
     if (typeof leftCriteria == 'object') {
         if ((obj.html().match(leftCriteria) || []).length <= (obj.html().match(rightCriteria) || []).length) {
             obj.addClass('bg-danger').removeClass('bg-light');
         }
-    } else if (leftCriteria<=rightCriteria) {
+    } else if (blnStrict && leftCriteria<=rightCriteria || !blnStrict && leftCriteria<rightCriteria) {
 		obj.addClass('bg-danger').removeClass('bg-light');
 	}
 }
@@ -279,12 +414,12 @@ function firstEgalSecond(obj, leftCriteria, rightCriteria) {
  * ----------------------------------------------
  * Cette fonction permet d'exclure un code dont le leftCriteria>=rightCriteria.
  */
-function firstInferieurSecond(obj, leftCriteria, rightCriteria) {
+function firstInferieurSecond(obj, leftCriteria, rightCriteria, blnStrict) {
 	if (typeof leftCriteria == 'object') {
         if ((obj.html().match(leftCriteria) || []).length >= (obj.html().match(rightCriteria) || []).length) {
             obj.addClass('bg-danger').removeClass('bg-light');
         }
-    } else if (leftCriteria>=rightCriteria) {
+    } else if (blnStrict && leftCriteria>=rightCriteria || !blnStrict && leftCriteria>rightCriteria) {
 		obj.addClass('bg-danger').removeClass('bg-light');
 	}
 }
@@ -306,6 +441,12 @@ function getCriteriaValue(obj, criteria) {
 		// On récupère la somme des valeurs associées au paramètre
 		case 't+c' :
 			valeur = obj.data('t')*1+obj.data('c')*1;
+		break;
+		case 'c+r' :
+			valeur = obj.data('c')*1+obj.data('r')*1;
+		break;
+		case 'r+t' :
+			valeur = obj.data('r')*1+obj.data('t')*1;
 		break;
 		case 't+c+r' :
 			valeur = obj.data('t')*1+obj.data('c')*1+obj.data('r')*1;
